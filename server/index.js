@@ -4,6 +4,8 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 import("./mongodb.js");
 const authroute = require("./routes/authorroute.js");
+const userroute = require("./routes/userroute.js");
+const canteenroute = require("./routes/canteenroute.js");
 
 //env configuration
 dotenv.config();
@@ -17,6 +19,8 @@ app.use(morgan("dev"));
 
 //use routes
 app.use("/auth", authroute);
+app.use("/user", userroute);
+app.use("/canteen", canteenroute);
 
 //port
 const port = 3000;
