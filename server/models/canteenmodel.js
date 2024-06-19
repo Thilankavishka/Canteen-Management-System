@@ -7,10 +7,10 @@ const canteensceema = new mongoose.Schema(
       type: String,
       required: [true, "canteen name required"],
     },
-    foods: {
-      type: Array,
-    },
     openclosetime: {
+      type: String,
+    },
+    description: {
       type: String,
     },
   },

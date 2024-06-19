@@ -1,14 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const canteenmodel = require("../models/canteenmodel.js");
+const adminmiddlewear = require("../middlewears/adminmiddleware.js");
 const authmiddlewear = require("../middlewears/authmiddleweare.js");
 
 //Add canteen
-router.post("/create", authmiddlewear, async (req, res) => {
+router.post("/create", adminmiddlewear, async (req, res) => {
   try {
-    const { Canteenname, foods, openclosetime } = req.body;
+    const { Canteenname, openclosetime, description } = req.body;
 
-    if (!Canteenname || !foods || !openclosetime) {
+    if (!Canteenname || !openclosetime || !description) {
       return res.status(500).send({
         success: false,
         message: "Please provide all details",
@@ -16,8 +17,8 @@ router.post("/create", authmiddlewear, async (req, res) => {
     }
     const newcanteen = new canteenmodel({
       Canteenname,
-      foods,
       openclosetime,
+      description,
     });
 
     await newcanteen.save();

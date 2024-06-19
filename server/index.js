@@ -6,6 +6,9 @@ import("./mongodb.js");
 const authroute = require("./routes/authorroute.js");
 const userroute = require("./routes/userroute.js");
 const canteenroute = require("./routes/canteenroute.js");
+const adminroute = require("./routes/adminroute.js");
+const foodroute = require("./routes/foodroute.js");
+const seed = require("./seed.js");
 
 //env configuration
 dotenv.config();
@@ -21,6 +24,8 @@ app.use(morgan("dev"));
 app.use("/auth", authroute);
 app.use("/user", userroute);
 app.use("/canteen", canteenroute);
+app.use("/admin", adminroute);
+app.use("/food", foodroute);
 
 //port
 const port = 3000;

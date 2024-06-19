@@ -3,7 +3,9 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const authmiddlewear = require("../middlewears/authmiddleweare");
 const usermodel = require("../models/usermodel");
+const canteenmodel = require("../models/canteenmodel");
 const { route } = require("./authorroute");
+const foodmodels = require("../models/foodsmodel");
 
 //GET user
 router.get("/getuser", authmiddlewear, async (req, res) => {
@@ -101,6 +103,84 @@ router.delete("/delete/:id", authmiddlewear, async (req, res) => {
     res
       .status(500)
       .send({ success: false, message: "Error in Delete Profile", error });
+  }
+});
+
+//diplay canteens
+router.get("/displaycanteens", authmiddlewear, async (req, res) => {
+  try {
+    const canteens = await canteenmodel.find();
+    if (!canteens) {
+      res
+        .status(500)
+        .json({ success: false, message: "Canteens Not Available" });
+    }
+    res.status(200).json(canteens);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//display Foods by Applied Canteen
+router.get("/Appliedfoods", authmiddlewear, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "Applied" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//display Foods by Bs Canteen
+router.get("/BsCanteen", authmiddlewear, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "Bs" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//display Foods by boyshostelcanteen
+router.get("/Boyshostelcanteen", authmiddlewear, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "BoysHostelCanteen" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
   }
 });
 
