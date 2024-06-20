@@ -30,6 +30,6 @@ const studentschema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const usermodel = mongoose.model("userr", studentschema);
+const usermodel = mongoose.model("user", studentschema);
 
 module.exports = usermodel;

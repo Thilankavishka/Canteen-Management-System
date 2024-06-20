@@ -9,7 +9,7 @@ const foodscheema = new mongoose.Schema(
       required: [true, "foodname name required"],
     },
     price: {
-      type: String,
+      type: Number,
       required: true,
     },
 
