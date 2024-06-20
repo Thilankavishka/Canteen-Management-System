@@ -6,6 +6,9 @@ const usermodel = require("../models/usermodel");
 const canteenmodel = require("../models/canteenmodel");
 const { route } = require("./authorroute");
 const foodmodels = require("../models/foodsmodel");
+const appliedadminmiddleware = require("../middlewears/appliedadminmiddleware");
+const bsadminmiddleware = require("../middlewears/bsadminmiddleware");
+const boysadminmiddleware = require("../middlewears/boysadminmiddleware");
 
 //GET user
 router.get("/getuser", authmiddlewear, async (req, res) => {
@@ -184,4 +187,66 @@ router.get("/Boyshostelcanteen", authmiddlewear, async (req, res) => {
   }
 });
 
+//display Foods for Applied Canteen Admin
+router.get("/Appliedadminfoods", appliedadminmiddleware, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "Applied" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//display Foods for Bs Canteen admin
+router.get("/Bsadminfoods", bsadminmiddleware, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "Bs" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//display Foods by boyshostelcanteen
+router.get("/Boyshosteladminfoods", boysadminmiddleware, async (req, res) => {
+  try {
+    const findfoods = await canteenmodel.aggregate([
+      { $match: { Canteenname: "BoysHostelCanteen" } },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "_id",
+          foreignField: "Canteenid",
+          as: "foods",
+        },
+      },
+      { $project: { _id: 0, Canteenname: 1, foods: 1 } },
+    ]);
+    res.status(200).json(findfoods);
+  } catch (err) {
+    console.log(err);
+  }
+});
 module.exports = router;

@@ -5,21 +5,29 @@ const ordermodel = require("../models/ordermodel.js");
 const paymentmodel = require("../models/paymentmodel.js");
 const adminmiddleweare = require("../middlewears/adminmiddleware.js");
 const usermiddleweaere = require("../middlewears/authmiddleweare.js");
+const appliedmiddlewaare = require("../middlewears/appliedadminmiddleware.js");
+const bsadminmiddleware = require("../middlewears/bsadminmiddleware.js");
+const boyscanteenmiddleware = require("../middlewears/boysadminmiddleware.js");
 const { default: mongoose } = require("mongoose");
+const canteenmodel = require("../models/canteenmodel.js");
 
-router.post("/addfood", adminmiddleweare, async (req, res) => {
+router.post("/addfoodapplied/:id", appliedmiddlewaare, async (req, res) => {
   try {
-    const { foodname, price, Canteenid, availableTime, imageurl } = req.body;
+    const { foodname, price, availableTime, imageurl } = req.body;
+    const canteenid = req.params.id;
+    const applied = await canteenmodel.findById(canteenid);
+    const appliedcanteenid = applied._id;
     //validation part
-    if (!foodname || !price || !Canteenid || !availableTime) {
+    if (!foodname || !price || !availableTime) {
       return res
         .status(500)
         .send({ success: false, message: "Please Provide Fields" });
     }
+
     const newfood = new foodmodel({
       foodname,
       price,
-      Canteenid,
+      Canteenid: appliedcanteenid,
       availableTime,
       imageurl,
     });
@@ -28,14 +36,82 @@ router.post("/addfood", adminmiddleweare, async (req, res) => {
 
     res.status(200).send({
       success: true,
-      message: "Food Added Successfully",
+      message: "Food Added Applied Canteen Successfully",
     });
   } catch (error) {
     console.log(error);
   }
 });
 
-//DeletefoodbyID
+//Add Food Bs Canteen
+router.post("/addfoodbs/:id", bsadminmiddleware, async (req, res) => {
+  try {
+    const { foodname, price, availableTime, imageurl } = req.body;
+    const canteenid = req.params.id;
+    const bs = await canteenmodel.findById(canteenid);
+    const bscanteenid = bs._id;
+    //validation part
+    if (!foodname || !price || !availableTime) {
+      return res
+        .status(500)
+        .send({ success: false, message: "Please Provide Fields" });
+    }
+    const newfood = new foodmodel({
+      foodname,
+      price,
+      Canteenid: bscanteenid,
+      availableTime,
+      imageurl,
+    });
+
+    await newfood.save();
+
+    res.status(200).send({
+      success: true,
+      message: "Food Added Bs Canteen Successfully",
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//Add Food Boyshostel Canteen
+router.post(
+  "/addfoodaboyshostel/:id",
+  boyscanteenmiddleware,
+  async (req, res) => {
+    try {
+      const { foodname, price, availableTime, imageurl } = req.body;
+      const canteenid = req.params.id;
+      const boyshostel = await canteenmodel.findById(canteenid);
+      const boyscanteenid = boyshostel._id;
+      //validation part
+      if (!foodname || !price || !availableTime) {
+        return res
+          .status(500)
+          .send({ success: false, message: "Please Provide Fields" });
+      }
+      const newfood = new foodmodel({
+        foodname,
+        price,
+        Canteenid: boyscanteenid,
+        availableTime,
+        imageurl,
+      });
+
+      await newfood.save();
+
+      res.status(200).send({
+        success: true,
+        message: "Food Added Boyshostel Canteen Successfully",
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+//DeletefoodbyID Applied Canteen
 router.delete("/deletefood/:id", adminmiddleweare, async (req, res) => {
   try {
     const id = req.params.id;
@@ -49,7 +125,7 @@ router.delete("/deletefood/:id", adminmiddleweare, async (req, res) => {
   }
 });
 
-//Update Food
+//Update Food Applied
 router.put("/updatefood/:id", adminmiddleweare, async (req, res) => {
   try {
     const foodid = req.params.id;
@@ -65,14 +141,16 @@ router.put("/updatefood/:id", adminmiddleweare, async (req, res) => {
         .status(404)
         .send({ success: false, message: "Food is Not Found" });
     }
-    const { foodname, price, Canteenid, availableTime, imageurl } = req.body;
+    const { foodname, price, availableTime, imageurl } = req.body;
 
     const updatefood = await foodmodel.findByIdAndUpdate(
       foodid,
-      { foodname, price, Canteenid, availableTime, imageurl },
+      { foodname, price, availableTime, imageurl },
       { new: true }
     );
-    res.status(200).send({ success: true, message: "Food was updated" });
+    res
+      .status(200)
+      .send({ success: true, message: " Food was updated Successfully" });
   } catch (err) {
     console.log(err);
   }
@@ -203,7 +281,7 @@ router.post("/pay/:id", usermiddleweaere, async (req, res) => {
   }
 });
 
-//Show Orders to user
+//Show payment to user
 router.get("/displaypayment/:id", usermiddleweaere, async (req, res) => {
   try {
     const id = req.params.id;

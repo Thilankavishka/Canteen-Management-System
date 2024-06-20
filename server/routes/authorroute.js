@@ -90,6 +90,7 @@ router.post("/login", async (req, res) => {
         token,
         admin,
       });
+      //student part
     } else if (role === "student") {
       //validation
       if (!registrationnumber || !password || !role) {
@@ -127,6 +128,111 @@ router.post("/login", async (req, res) => {
         message: "Login Successfully",
         token,
         user,
+      });
+      //applied admin part
+    } else if (role === "appliedadmin") {
+      //validate
+      if (!username || !password || !role) {
+        return res.status(500).send({
+          success: false,
+          message: "Please Provide Username,Password or role Fields",
+        });
+      }
+      //check admin
+      const admin = await adminmodel.findOne({ username });
+      if (!admin) {
+        return res.status(404).send({
+          success: false,
+          message: "Applied Admin Not Registered",
+        });
+      }
+      //compare admin password
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) {
+        return res
+          .status(500)
+          .send({ success: false, message: "Invalid Credentials" });
+      }
+      const token = jwt.sign(
+        { id: admin._id, role: "appliedadmin" },
+        process.env.JWT_SECRET_APPLIED_ADMIN
+      );
+      admin.password = undefined;
+      res.status(200).send({
+        success: true,
+        message: "Applied Admin Login Successfully",
+        token,
+        admin,
+      });
+      //bsadminpart
+    } else if (role === "bsadmin") {
+      //validate
+      if (!username || !password || !role) {
+        return res.status(500).send({
+          success: false,
+          message: "Please Provide Username,Password or role Fields",
+        });
+      }
+      //check admin
+      const admin = await adminmodel.findOne({ username });
+      if (!admin) {
+        return res.status(404).send({
+          success: false,
+          message: "Bs Admin Not Registered",
+        });
+      }
+      //compare admin password
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) {
+        return res
+          .status(500)
+          .send({ success: false, message: "Invalid Credentials" });
+      }
+      const token = jwt.sign(
+        { id: admin._id, role: "bsadmin" },
+        process.env.JWT_SECRET_BS_ADMIN
+      );
+      admin.password = undefined;
+      res.status(200).send({
+        success: true,
+        message: "Bs Admin Login Successfully",
+        token,
+        admin,
+      });
+      //boyshostelpart
+    } else if (role === "boyhosteladmin") {
+      //validate
+      if (!username || !password || !role) {
+        return res.status(500).send({
+          success: false,
+          message: "Please Provide Username,Password or role Fields",
+        });
+      }
+      //check admin
+      const admin = await adminmodel.findOne({ username });
+      if (!admin) {
+        return res.status(404).send({
+          success: false,
+          message: "Boyshostel Admin Not Registered",
+        });
+      }
+      //compare admin password
+      const isMatch = await bcrypt.compare(password, admin.password);
+      if (!isMatch) {
+        return res
+          .status(500)
+          .send({ success: false, message: "Invalid Credentials" });
+      }
+      const token = jwt.sign(
+        { id: admin._id, role: "boyhosteladmin" },
+        process.env.JWT_SECRET_BOYSCANTEEN_ADMIN
+      );
+      admin.password = undefined;
+      res.status(200).send({
+        success: true,
+        message: "Boyshostel Admin Login Successfully",
+        token,
+        admin,
       });
     }
   } catch (error) {
